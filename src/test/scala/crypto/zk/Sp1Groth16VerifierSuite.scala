@@ -34,7 +34,7 @@ object Sp1Groth16VerifierSuite extends SimpleIOSuite {
     hex.grouped(2).map(h => Integer.parseInt(h, 16).toByte).toArray
   }
 
-  private final case class Fixture(vkey: Array[Byte], publicValues: Array[Byte], proofBytes: Array[Byte])
+  final private case class Fixture(vkey: Array[Byte], publicValues: Array[Byte], proofBytes: Array[Byte])
 
   private val fixture: Fixture = {
     val raw = {
@@ -76,7 +76,7 @@ object Sp1Groth16VerifierSuite extends SimpleIOSuite {
     val g = AltBn128Point.g1()
     Bn254.G1(unsigned(g.getX.toBytes), unsigned(g.getY.toBytes))
   }
-  private val g2: Bn254.G2 = {
+  private val g2: Bn254.G2 =
     // BN254 G2 generator (real, imag for x and y), EIP-197 canonical values.
     Bn254.G2(
       xReal = new BigInteger("10857046999023057135944570762232829481370756359578518086990519993285655852781"),
@@ -84,7 +84,6 @@ object Sp1Groth16VerifierSuite extends SimpleIOSuite {
       yReal = new BigInteger("8495653923123431417604973247489272438418190587263600148770280649306958101930"),
       yImag = new BigInteger("4082367875863433681332203403145435568316851327593401208105741076214120093531")
     )
-  }
 
   pureTest("EIP-197 pairing identity: e(G1, G2) * e(-G1, G2) == 1") {
     val negG1 = Bn254.G1(g1.x, Bn254.P.subtract(g1.y))

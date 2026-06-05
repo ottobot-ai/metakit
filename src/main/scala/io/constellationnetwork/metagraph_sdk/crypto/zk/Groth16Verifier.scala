@@ -131,10 +131,10 @@ object Groth16Verifier {
         // e(A, B) * e(C, -delta) * e(alpha, -beta) * e(L, -gamma) == 1
         val ok = Bn254.pairingProductIsOne(
           Seq(
-            a -> b,
-            c -> deltaNeg,
+            a     -> b,
+            c     -> deltaNeg,
             alpha -> betaNeg,
-            l -> gammaNeg
+            l     -> gammaNeg
           )
         )
         if (ok) Right(()) else Left("pairing check failed")

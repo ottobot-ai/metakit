@@ -91,8 +91,9 @@ object Bn254 {
    * returns 1 exactly when this product equals the GT identity.
    */
   def pairingProductIsOne(pairs: Seq[(G1, G2)]): Boolean = {
-    val millerProduct = pairs.foldLeft(Fq12.one()) { case (acc, (g1, g2)) =>
-      acc.multiply(AltBn128Fq12Pairer.pair(g1.toBesu, g2.toBesu))
+    val millerProduct = pairs.foldLeft(Fq12.one()) {
+      case (acc, (g1, g2)) =>
+        acc.multiply(AltBn128Fq12Pairer.pair(g1.toBesu, g2.toBesu))
     }
     AltBn128Fq12Pairer.finalize(millerProduct).equals(Fq12.one())
   }

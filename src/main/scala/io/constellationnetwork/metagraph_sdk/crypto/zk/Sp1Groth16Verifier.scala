@@ -53,52 +53,52 @@ object Sp1Groth16Verifier {
    * @return `Right(())` on success, `Left(reason)` on any failure.
    */
   def verify(
-    programVKey:  Array[Byte],
+    programVKey: Array[Byte],
     publicValues: Array[Byte],
-    proofBytes:   Array[Byte]
+    proofBytes: Array[Byte]
   ): Either[String, Unit] =
     for {
       _ <- Either.cond(
-             programVKey.length == 32,
-             (),
-             s"programVKey must be 32 bytes, got ${programVKey.length}"
-           )
+        programVKey.length == 32,
+        (),
+        s"programVKey must be 32 bytes, got ${programVKey.length}"
+      )
       _ <- Either.cond(
-             proofBytes.length == ExpectedProofLength,
-             (),
-             s"proofBytes must be $ExpectedProofLength bytes, got ${proofBytes.length}"
-           )
+        proofBytes.length == ExpectedProofLength,
+        (),
+        s"proofBytes must be $ExpectedProofLength bytes, got ${proofBytes.length}"
+      )
       _ <- Either.cond(
-             selectorMatches(proofBytes),
-             (),
-             "wrong verifier selector"
-           )
+        selectorMatches(proofBytes),
+        (),
+        "wrong verifier selector"
+      )
       // abi.decode(proofBytes[4:], (uint256, uint256, uint256, uint256[8]))
-      words    = decodeWords(proofBytes, offset = 4, count = 11)
+      words = decodeWords(proofBytes, offset = 4, count = 11)
       exitCode = words(0)
-      vkRoot   = words(1)
-      nonce    = words(2)
-      proof    = words.slice(3, 11) // uint256[8], inline
+      vkRoot = words(1)
+      nonce = words(2)
+      proof = words.slice(3, 11) // uint256[8], inline
       _ <- Either.cond(exitCode.signum == 0, (), "invalid exit code")
       _ <- Either.cond(vkRoot == VkRoot, (), "invalid vk root")
-      programVKeyInt    = new BigInteger(1, programVKey)
+      programVKeyInt = new BigInteger(1, programVKey)
       publicValuesDigest = hashPublicValues(publicValues)
-      inputs            = Vector(programVKeyInt, publicValuesDigest, exitCode, vkRoot, nonce)
+      inputs = Vector(programVKeyInt, publicValuesDigest, exitCode, vkRoot, nonce)
       result <- Groth16Verifier.verifyProof(proof, inputs)
     } yield result
 
   private def selectorMatches(proofBytes: Array[Byte]): Boolean =
     proofBytes.length >= 4 &&
-      proofBytes(0) == VerifierSelector(0) &&
-      proofBytes(1) == VerifierSelector(1) &&
-      proofBytes(2) == VerifierSelector(2) &&
-      proofBytes(3) == VerifierSelector(3)
+    proofBytes(0) == VerifierSelector(0) &&
+    proofBytes(1) == VerifierSelector(1) &&
+    proofBytes(2) == VerifierSelector(2) &&
+    proofBytes(3) == VerifierSelector(3)
 
   /** Decode `count` consecutive big-endian uint256 words starting at `offset`. */
   private def decodeWords(bytes: Array[Byte], offset: Int, count: Int): Vector[BigInteger] =
     Vector.tabulate(count) { i =>
       val start = offset + i * 32
-      val word  = new Array[Byte](32)
+      val word = new Array[Byte](32)
       System.arraycopy(bytes, start, word, 0, 32)
       new BigInteger(1, word)
     }
