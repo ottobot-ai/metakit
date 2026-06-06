@@ -146,7 +146,7 @@ object JsonLogicSemantics {
           case EntriesOp            => handleEntriesOp
           case TypeOfOp             => handleTypeOfOp
           case PoseidonOp           => handlePoseidonOp
-          case PmtVerifyOp       => handlePmtVerifyOp
+          case PmtVerifyOp          => handlePmtVerifyOp
           case Groth16VerifyOp      => handleGroth16VerifyOp
           case EcVrfVerifyOp        => handleEcVrfVerifyOp
           case Bn254AddOp           => handleBn254AddOp

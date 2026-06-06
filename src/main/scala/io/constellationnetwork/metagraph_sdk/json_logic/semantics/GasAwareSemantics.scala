@@ -164,7 +164,7 @@ object GasAwareSemantics {
         case EntriesOp            => config.entries
         case TypeOfOp             => config.typeOf
         case PoseidonOp           => config.poseidon
-        case PmtVerifyOp       => config.pmtVerify
+        case PmtVerifyOp          => config.pmtVerify
         case Groth16VerifyOp      => config.groth16Verify
         case EcVrfVerifyOp        => config.ecvrfVerify
         case Bn254AddOp           => config.bn254Add
