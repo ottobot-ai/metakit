@@ -62,7 +62,7 @@ import io.constellationnetwork.metagraph_sdk.crypto.zk.poseidon.Poseidon
  * @param leaves     the live, non-zero leaves keyed by position (the logical contents).
  */
 final class PoseidonMerkleTree private (
-  val depth:      Int,
+  val depth: Int,
   val zeroHashes: Vector[BigInt],
   private val nodes: Map[(Int, BigInt), BigInt],
   private val leaves: Map[BigInt, BigInt]

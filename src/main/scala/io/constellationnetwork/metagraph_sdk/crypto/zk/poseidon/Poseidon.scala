@@ -79,9 +79,9 @@ object Poseidon {
 
   /** x^5 mod R, the Poseidon S-box. */
   private def pow5(a: BigInt): BigInt = {
-    val a2 = a * a % R
+    val a2 = a * a   % R
     val a4 = a2 * a2 % R
-    a4 * a % R
+    a4 * a           % R
   }
 
   /**
