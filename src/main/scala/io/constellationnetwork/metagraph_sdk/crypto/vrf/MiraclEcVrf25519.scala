@@ -38,9 +38,10 @@ final class MiraclEcVrf25519 {
 
   import MiraclEcVrf25519._
 
-  /** Generate VRF proof. `secretKey` is a 32-byte Ed25519 seed; returns the
-    * 80-byte proof (Gamma || c || s).
-    */
+  /**
+   * Generate VRF proof. `secretKey` is a 32-byte Ed25519 seed; returns the
+   * 80-byte proof (Gamma || c || s).
+   */
   def vrfProof(secretKey: Array[Byte], message: Array[Byte]): Array[Byte] = {
     require(secretKey.length == 32, "Secret key must be 32 bytes")
 
@@ -86,8 +87,8 @@ final class MiraclEcVrf25519 {
       try {
         val verdict =
           for {
-            yPoint              <- bytesToPoint(publicKey)
-            (gammaPoint, c, s)  <- decodeProof(proof)
+            yPoint             <- bytesToPoint(publicKey)
+            (gammaPoint, c, s) <- decodeProof(proof)
           } yield {
             // H = ECVRF_hash_to_curve(suite_string, Y, alpha_string)
             val hPoint = hashToCurve(publicKey, message)
@@ -159,11 +160,12 @@ object MiraclEcVrf25519 {
   // Scalar arithmetic (mod L), all little-endian on the wire.
   // ---------------------------------------------------------------------------
 
-  /** RFC 8032 clamp on the low 32 bytes of SHA-512(seed): clear bottom 3 bits,
-    * clear top bit, set second-highest bit. The clamped value is < L for our
-    * arithmetic so we reduce mod L (matching elisabeth's `Scalar.fromBits`
-    * which the multiply routines treat mod the group order).
-    */
+  /**
+   * RFC 8032 clamp on the low 32 bytes of SHA-512(seed): clear bottom 3 bits,
+   * clear top bit, set second-highest bit. The clamped value is < L for our
+   * arithmetic so we reduce mod L (matching elisabeth's `Scalar.fromBits`
+   * which the multiply routines treat mod the group order).
+   */
   private def clampedScalar(low32: Array[Byte]): BIG = {
     val pruned = low32.clone()
     pruned(0) = (pruned(0) & 0xf8).toByte
@@ -185,7 +187,6 @@ object MiraclEcVrf25519 {
 
   private def scalarAdd(a: BIG, b: BIG): BIG = BIG.modadd(a, b, order)
   private def scalarMul(a: BIG, b: BIG): BIG = BIG.modmul(a, b, order)
-  
 
   /** Compare two challenge scalars on their first 16 little-endian bytes. */
   private def scalarEquals16(a: BIG, b: BIG): Boolean = {

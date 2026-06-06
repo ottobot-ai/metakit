@@ -55,8 +55,9 @@ object MiraclBn254CompatSuite extends SimpleIOSuite {
   // ---------------------------------------------------------------------------
 
   private def reconstruct(limbs: Array[Long], baseBits: Int): BigInteger =
-    limbs.zipWithIndex.foldLeft(BigInteger.ZERO) { case (acc, (limb, i)) =>
-      acc.add(BigInteger.valueOf(limb).shiftLeft(baseBits * i))
+    limbs.zipWithIndex.foldLeft(BigInteger.ZERO) {
+      case (acc, (limb, i)) =>
+        acc.add(BigInteger.valueOf(limb).shiftLeft(baseBits * i))
     }
 
   // alt_bn128 (Ethereum / EIP-197) constants.
