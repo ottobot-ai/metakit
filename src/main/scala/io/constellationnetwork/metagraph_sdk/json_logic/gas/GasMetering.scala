@@ -123,6 +123,19 @@ case class GasConfig(
   missing: GasCost = GasCost(10),
   missingSome: GasCost = GasCost(15),
   typeOf: GasCost = GasCost(1),
+  // ZK / crypto opcodes. Costs are set relative to real compute and are the DoS bound for the VM:
+  //   - groth16Verify is by far the most expensive (a BN254 pairing product + final exponentiation),
+  //   - ecvrf is high (Ed25519 scalar muls + hash-to-curve),
+  //   - merkleVerify is a flat base plus a per-sibling cost (merklePerSibling) charged in the gas-aware
+  //     layer, since cost scales with path length,
+  //   - poseidon is a flat base plus a per-input cost (poseidonPerInput), since each input widens the
+  //     permutation.
+  poseidon: GasCost = GasCost(150),
+  poseidonPerInput: GasCost = GasCost(150),
+  merkleVerify: GasCost = GasCost(200),
+  merklePerSibling: GasCost = GasCost(300),
+  groth16Verify: GasCost = GasCost(250_000),
+  ecvrfVerify: GasCost = GasCost(50_000),
   const: GasCost = GasCost.Zero,
   varAccess: GasCost = GasCost(2),
   depthPenaltyMultiplier: Long = 5L,
