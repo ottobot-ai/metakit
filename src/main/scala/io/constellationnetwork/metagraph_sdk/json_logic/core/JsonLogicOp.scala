@@ -88,7 +88,7 @@ object JsonLogicOp extends Enum[JsonLogicOp] with CirceEnum[JsonLogicOp] {
 
   // ZK / Crypto Operations (verify/hash precompiles over verified facts)
   case object PoseidonOp extends JsonLogicOp("poseidon")
-  case object MerkleVerifyOp extends JsonLogicOp("merkle_verify")
+  case object PmtVerifyOp extends JsonLogicOp("pmt_verify")
   case object Groth16VerifyOp extends JsonLogicOp("groth16_verify")
   case object EcVrfVerifyOp extends JsonLogicOp("ecvrf_verify")
 

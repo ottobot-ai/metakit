@@ -146,7 +146,7 @@ object JsonLogicSemantics {
           case EntriesOp            => handleEntriesOp
           case TypeOfOp             => handleTypeOfOp
           case PoseidonOp           => handlePoseidonOp
-          case MerkleVerifyOp       => handleMerkleVerifyOp
+          case PmtVerifyOp       => handlePmtVerifyOp
           case Groth16VerifyOp      => handleGroth16VerifyOp
           case EcVrfVerifyOp        => handleEcVrfVerifyOp
           case Bn254AddOp           => handleBn254AddOp
@@ -1262,9 +1262,9 @@ object JsonLogicSemantics {
           CryptoOps.poseidon(values).map(_.pure[Result])
         }
 
-      private def handleMerkleVerifyOp(args: List[Result[JsonLogicValue]]): F[Either[JsonLogicException, Result[JsonLogicValue]]] =
+      private def handlePmtVerifyOp(args: List[Result[JsonLogicValue]]): F[Either[JsonLogicException, Result[JsonLogicValue]]] =
         args.withMetrics { values =>
-          CryptoOps.merkleVerify(values).map(_.pure[Result])
+          CryptoOps.pmtVerify(values).map(_.pure[Result])
         }
 
       private def handleGroth16VerifyOp(args: List[Result[JsonLogicValue]]): F[Either[JsonLogicException, Result[JsonLogicValue]]] =
