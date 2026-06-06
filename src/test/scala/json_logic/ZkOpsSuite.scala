@@ -14,10 +14,10 @@ import io.circe.parser
 import weaver.SimpleIOSuite
 
 /**
- * End-to-end tests for the JLVM ZK / crypto opcodes (`poseidon`, `merkle_verify`, `groth16_verify`,
+ * End-to-end tests for the JLVM ZK / crypto opcodes (`poseidon`, `pmt_verify`, `groth16_verify`,
  * `ecvrf_verify`) and the shared [[HexBytes]] codec. Each opcode is exercised both directly (through
  * [[CryptoOps]]) and end-to-end through the evaluator, with a positive and a negative case, plus a
- * worked policy-over-verified-facts contract combining `groth16_verify` and `merkle_verify`.
+ * worked policy-over-verified-facts contract combining `groth16_verify` and `pmt_verify`.
  */
 object ZkOpsSuite extends SimpleIOSuite {
 
@@ -97,7 +97,7 @@ object ZkOpsSuite extends SimpleIOSuite {
   }
 
   // ===========================================================================
-  // merkle_verify
+  // pmt_verify
   // ===========================================================================
 
   private val MerkleDepth = 8
@@ -113,28 +113,28 @@ object ZkOpsSuite extends SimpleIOSuite {
 
   private def merkleExpr(root: BigInt, leaf: BigInt, index: BigInt, siblings: Vector[BigInt]): String = {
     val sibs = siblings.map(s => "\"" + fr(s) + "\"").mkString("[", ",", "]")
-    s"""{"merkle_verify":["${fr(root)}","${fr(leaf)}",$index,$sibs]}"""
+    s"""{"pmt_verify":["${fr(root)}","${fr(leaf)}",$index,$sibs]}"""
   }
 
-  test("merkle_verify returns true for a real inclusion proof") {
+  test("pmt_verify returns true for a real inclusion proof") {
     evalExpr(merkleExpr(merkleTree.root, merkleLeaf, merklePos, merkleProof.siblings))
       .map(r => expect(r == Right(BoolValue(true))))
   }
 
-  test("merkle_verify returns false when a sibling is tampered") {
+  test("pmt_verify returns false when a sibling is tampered") {
     val tampered = merkleProof.siblings.updated(0, commitment(999))
     evalExpr(merkleExpr(merkleTree.root, merkleLeaf, merklePos, tampered))
       .map(r => expect(r == Right(BoolValue(false))))
   }
 
-  test("merkle_verify returns false when the leaf is tampered") {
+  test("pmt_verify returns false when the leaf is tampered") {
     evalExpr(merkleExpr(merkleTree.root, commitment(123), merklePos, merkleProof.siblings))
       .map(r => expect(r == Right(BoolValue(false))))
   }
 
-  test("merkle_verify errors on a malformed argument shape") {
+  test("pmt_verify errors on a malformed argument shape") {
     // Missing the siblings array entirely.
-    evalExpr(s"""{"merkle_verify":["${fr(merkleTree.root)}","${fr(merkleLeaf)}",42]}""")
+    evalExpr(s"""{"pmt_verify":["${fr(merkleTree.root)}","${fr(merkleLeaf)}",42]}""")
       .map(r => expect(r.isLeft))
   }
 
@@ -239,7 +239,7 @@ object ZkOpsSuite extends SimpleIOSuite {
        |{"if":[
        |  {"and":[
        |    {"groth16_verify":["${groth16.vkey}","${groth16.publicValues}","$groth16Proof"]},
-       |    {"merkle_verify":["${fr(merkleTree.root)}","${fr(merkleLeaf)}",$merklePos,$sibs]}
+       |    {"pmt_verify":["${fr(merkleTree.root)}","${fr(merkleLeaf)}",$merklePos,$sibs]}
        |  ]},
        |  "granted",
        |  "denied"

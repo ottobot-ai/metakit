@@ -59,35 +59,35 @@ object CryptoOps {
   }
 
   // ---------------------------------------------------------------------------
-  // merkle_verify: [root, leaf, index, [siblings...]] -> bool.
+  // pmt_verify: [root, leaf, index, [siblings...]] -> bool.
   // ---------------------------------------------------------------------------
 
-  def merkleVerify(values: List[JsonLogicValue]): Either[JsonLogicException, JsonLogicValue] =
+  def pmtVerify(values: List[JsonLogicValue]): Either[JsonLogicException, JsonLogicValue] =
     values match {
       case rootV :: leafV :: indexV :: ArrayValue(siblingsV) :: Nil =>
         // Any malformed component (bad hex / non-canonical / negative or out-of-range index)
         // is a Result error; a well-formed-but-wrong proof simply verifies to `false`.
         for {
-          rootHex <- expectStr("merkle_verify root")(rootV)
-          leafHex <- expectStr("merkle_verify leaf")(leafV)
-          root    <- HexBytes.parseFr(rootHex, "merkle_verify root")
-          leaf    <- HexBytes.parseFr(leafHex, "merkle_verify leaf")
-          index   <- expectIndex("merkle_verify index")(indexV)
+          rootHex <- expectStr("pmt_verify root")(rootV)
+          leafHex <- expectStr("pmt_verify leaf")(leafV)
+          root    <- HexBytes.parseFr(rootHex, "pmt_verify root")
+          leaf    <- HexBytes.parseFr(leafHex, "pmt_verify leaf")
+          index   <- expectIndex("pmt_verify index")(indexV)
           siblings <- siblingsV.zipWithIndex.traverse {
             case (s, i) =>
-              expectStr(s"merkle_verify sibling[$i]")(s).flatMap(HexBytes.parseFr(_, s"merkle_verify sibling[$i]"))
+              expectStr(s"pmt_verify sibling[$i]")(s).flatMap(HexBytes.parseFr(_, s"pmt_verify sibling[$i]"))
           }
           depth = siblings.length
           _ <- Either.cond(
             index < (BigInt(1) << depth),
             (),
-            JsonLogicException(s"merkle_verify: index $index out of range for depth $depth")
+            JsonLogicException(s"pmt_verify: index $index out of range for depth $depth")
           )
           proof = PoseidonMerkleProof(index, siblings.toVector)
         } yield BoolValue(PoseidonMerkleTree.verifyInclusion(leaf, proof, root))
       case _ =>
         JsonLogicException(
-          s"merkle_verify: expected [rootHex, leafHex, index, [siblingHex...]], got $values"
+          s"pmt_verify: expected [rootHex, leafHex, index, [siblingHex...]], got $values"
         ).asLeft
     }
 

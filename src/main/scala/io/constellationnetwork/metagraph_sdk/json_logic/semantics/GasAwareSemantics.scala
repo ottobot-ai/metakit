@@ -164,7 +164,7 @@ object GasAwareSemantics {
         case EntriesOp       => config.entries
         case TypeOfOp        => config.typeOf
         case PoseidonOp      => config.poseidon
-        case MerkleVerifyOp  => config.merkleVerify
+        case PmtVerifyOp     => config.pmtVerify
         case Groth16VerifyOp => config.groth16Verify
         case EcVrfVerifyOp   => config.ecvrfVerify
       }
@@ -271,10 +271,10 @@ object GasAwareSemantics {
               case ArrayValue(arr) :: Nil => gasConfig.poseidonPerInput * arr.size.toLong
               case list                   => gasConfig.poseidonPerInput * list.size.toLong
             }
-          // merkle_verify cost scales with path length (= number of siblings).
-          case MerkleVerifyOp =>
+          // pmt_verify cost scales with path length (= number of siblings).
+          case PmtVerifyOp =>
             args match {
-              case _ :: _ :: _ :: ArrayValue(siblings) :: Nil => gasConfig.merklePerSibling * siblings.size.toLong
+              case _ :: _ :: _ :: ArrayValue(siblings) :: Nil => gasConfig.pmtPerSibling * siblings.size.toLong
               case _                                          => GasCost.Zero
             }
           case _ => GasCost.Zero
