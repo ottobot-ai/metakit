@@ -37,7 +37,7 @@ object CryptoOps {
       case Nil => JsonLogicException("poseidon: requires at least one field element").asLeft
       // Accept either variadic hex args or a single array of hex args.
       case ArrayValue(arr) :: Nil if arr.nonEmpty => arr.traverse(expectStr("poseidon input"))
-      case _                                       => values.traverse(expectStr("poseidon input"))
+      case _                                      => values.traverse(expectStr("poseidon input"))
     }
 
     for {
@@ -132,13 +132,14 @@ object CryptoOps {
           alpha <- HexBytes.parseBytes(alphaHex, None, "ecvrf_verify alpha")
           proof <- HexBytes.parseBytes(proofHex, Some(MiraclEcVrf25519.ProofBytes), "ecvrf_verify proof")
           valid = vrf.vrfVerify(pk, alpha, proof)
-          beta <- if (valid) {
-            vrf.vrfProofToHash(proof) match {
-              case Some(b) => StrValue(HexBytes.encodeBytes(b)): JsonLogicValue
-              case None    => (NullValue: JsonLogicValue) // valid proof should always yield beta; defensive
-            }
-          }.asRight[JsonLogicException]
-          else (NullValue: JsonLogicValue).asRight[JsonLogicException]
+          beta <-
+            if (valid) {
+              vrf.vrfProofToHash(proof) match {
+                case Some(b) => StrValue(HexBytes.encodeBytes(b)): JsonLogicValue
+                case None    => NullValue: JsonLogicValue // valid proof should always yield beta; defensive
+              }
+            }.asRight[JsonLogicException]
+            else (NullValue: JsonLogicValue).asRight[JsonLogicException]
         } yield MapValue(Map("valid" -> BoolValue(valid), "beta" -> beta))
       case _ =>
         JsonLogicException(

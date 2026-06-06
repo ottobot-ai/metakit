@@ -42,10 +42,10 @@ object ZkOpsSuite extends SimpleIOSuite {
   }
 
   pureTest("HexBytes rejects malformed hex (uppercase / missing prefix / odd length)") {
-    expect(HexBytes.parseBytes("0xDEAD", Some(2), "x").isLeft) &&        // uppercase
-    expect(HexBytes.parseBytes("deadbeef", Some(4), "x").isLeft) &&      // no 0x prefix
-    expect(HexBytes.parseBytes("0xabc", None, "x").isLeft) &&            // odd nibble count
-    expect(HexBytes.parseBytes("0xzz", Some(1), "x").isLeft)             // non-hex chars
+    expect(HexBytes.parseBytes("0xDEAD", Some(2), "x").isLeft) && // uppercase
+    expect(HexBytes.parseBytes("deadbeef", Some(4), "x").isLeft) && // no 0x prefix
+    expect(HexBytes.parseBytes("0xabc", None, "x").isLeft) && // odd nibble count
+    expect(HexBytes.parseBytes("0xzz", Some(1), "x").isLeft) // non-hex chars
   }
 
   pureTest("HexBytes rejects wrong width") {
@@ -75,7 +75,9 @@ object ZkOpsSuite extends SimpleIOSuite {
     BigInt("115cc0f5e7d690413df64c6b9662e9cf2a3617f2743245519e19607a4417189a", 16)
 
   test("poseidon([0x01, 0x02]) matches the known circomlib vector") {
-    evalExpr("""{"poseidon":["0x0000000000000000000000000000000000000000000000000000000000000001","0x0000000000000000000000000000000000000000000000000000000000000002"]}""")
+    evalExpr(
+      """{"poseidon":["0x0000000000000000000000000000000000000000000000000000000000000001","0x0000000000000000000000000000000000000000000000000000000000000002"]}"""
+    )
       .map(r => expect(r == Right(StrValue(fr(poseidon_1_2)))))
   }
 
