@@ -40,16 +40,22 @@ See `AuthDbOps` / `HexBytes.parseNibbleHex` — odd nibble counts are legal ther
 byte-aligned (even-nibble) paths are a subset. Compatibility is exercised by
 `CommittedProofSuite`.
 
-### Reserved top-level namespaces
+### Namespace policy
 
-| namespace          | contents |
-|--------------------|----------|
-| `fiber/<uuid>`     | state-machine fiber state (uuid lowercase hyphenated) |
-| `registry/<name>`  | registry entries |
-| `oracle/<id>`      | oracle/script state |
-| `meta/...`         | module/system metadata (versioning, schema ids, config digests) |
+NORMATIVE: only `meta/...` is reserved, for module/system metadata (versioning, schema ids,
+config digests) — applications must not write under it. Everything else is application-defined
+within the key grammar above. Reservation policy is deliberately TLD-style: like package-registry
+names, top-level namespaces are conventions coordinated between applications, not rules this
+module enforces.
 
-Applications may add further top-level namespaces, but must not repurpose the reserved ones.
+INFORMATIVE — well-known namespaces (conventions established by adopters; register new
+top-levels here as the cross-metagraph vocabulary grows):
+
+| namespace          | contents | established by |
+|--------------------|----------|----------------|
+| `fiber/<uuid>`     | state-machine fiber state (uuid lowercase hyphenated) | ottochain |
+| `script/<id>`      | script state ("oracle" is a deprecated name for these — do not use) | ottochain |
+| `registry/<name>`  | registry entries | ottochain |
 
 ## 2. Catalog composition (tier 2: the LIVE root catalog, epoch rollup)
 
